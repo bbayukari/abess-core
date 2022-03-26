@@ -144,8 +144,10 @@
     <ClCompile Include="..\..\abess\python\src\List.cpp" />
     <ClCompile Include="..\..\abess\src\api.cpp" />
     <ClCompile Include="..\..\abess\src\normalize.cpp" />
+    <ClCompile Include="..\..\abess\src\UniversalData.cpp" />
     <ClCompile Include="..\..\abess\src\utilities.cpp" />
     <ClCompile Include="abess-core.cpp" />
+    <ClCompile Include="universalFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\abess\python\src\List.h" />
@@ -159,6 +161,7 @@
     <ClInclude Include="..\..\abess\src\normalize.h" />
     <ClInclude Include="..\..\abess\src\path.h" />
     <ClInclude Include="..\..\abess\src\screening.h" />
+    <ClInclude Include="..\..\abess\src\UniversalData.h" />
     <ClInclude Include="..\..\abess\src\utilities.h" />
     <ClInclude Include="..\..\abess\src\workflow.h" />
     <ClInclude Include="abess-core.h" />

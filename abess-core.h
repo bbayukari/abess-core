@@ -73,3 +73,44 @@ List glm() {
         covariance_update, sparse_matrix, splicing_type, sub_search,
         cv_fold_id, A_init);
 }
+
+/*
+List rpca() {
+    Eigen::MatrixXd x;
+    int n=30;
+    int p=60;
+    int max_iter=1;
+    int exchange_num=35;
+    int path_type=1;
+    bool is_warm_start=true;
+    int ic_type=1;
+    double ic_coef=1;
+    Eigen::VectorXi sequence = Eigen::VectorXi::LinSpaced(21, 50, 70);
+    cout << sequence;
+    Eigen::VectorXd lambda_seq = Eigen::VectorXd::Constant(1, 2);;
+    int s_min=1;
+    int s_max=6;
+    double lambda_min=0;
+    double lambda_max=0;
+    int nlambda=0;
+    int screening_size=-1;
+    int primary_model_fit_max_iter=1;
+    double primary_model_fit_epsilon=0.001;
+    Eigen::VectorXi g_index = Eigen::VectorXi::LinSpaced(n*p, 0, n*p-1);
+    Eigen::VectorXi always_select;
+    bool early_stop=false;
+    int thread=0;
+    bool sparse_matrix=false;
+    int splicing_type=0;
+    int sub_search=60;
+    Eigen::VectorXi A_init;
+
+    return abessRPCA_API(Eigen::MatrixXd x, int n, int p, int max_iter, int exchange_num, int path_type, bool is_warm_start,
+        int ic_type, double ic_coef, Eigen::VectorXi sequence,
+        Eigen::VectorXd lambda_seq,  // rank of L
+        int s_min, int s_max, double lambda_min, double lambda_max, int nlambda, int screening_size,
+        int primary_model_fit_max_iter, double primary_model_fit_epsilon, Eigen::VectorXi g_index,
+        Eigen::VectorXi always_select, bool early_stop, int thread, bool sparse_matrix, int splicing_type,
+        int sub_search, Eigen::VectorXi A_init);
+}
+*/
