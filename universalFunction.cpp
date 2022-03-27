@@ -6,12 +6,18 @@
 
 // [[Rcpp::plugins(cpp14)]]
 
-/************************************** User defined **************************************/
+
 struct ExternData{
+/************************************** User defined **************************************/
     Eigen::MatrixXd x;
     Eigen::VectorXd y;
-};
+    ExternData(Eigen::MatrixXd x, Eigen::VectorXd y) {
+        this->x = x;
+        this->y = y;
+    }
 /************************************** User defined **************************************/
+};
+
 
 class AutoDiffFunction :public UniversalData {
 private:
@@ -22,6 +28,7 @@ public:
         if (this->compute_para_index.size() == 0) {
             this->compute_para_index = this->effective_para_index;
         }
+        this->data = (ExternData*)this->data;
     }
     template <typename T> 
     T operator()(const Eigen::VectorX<T>& compute_para) const {
@@ -84,4 +91,14 @@ double function(const Eigen::VectorXd& effective_para, const UniversalData& univ
 // [[Rcpp::export]]
 Rcpp::XPtr<universal_function> get_universal_function() {
     return Rcpp::XPtr<universal_function>(new universal_function(&function));
+}
+
+// [[Rcpp::export]]
+Rcpp::XPtr<void*> get_extern_data(
+    /************************************** User defined **************************************/
+    Eigen::MatrixXd x, Eigen::VectorXd y
+    /************************************** User defined **************************************/
+) {
+    ExternData* ptr = new ExternData(x,y);
+    return Rcpp::XPtr<void*>(new (void*) ptr);
 }
