@@ -13,13 +13,10 @@ struct ExternData{
 /************************************** User defined **************************************/
     MatrixXd x;
     VectorXd y;
-    ExternData(MatrixXd x, VectorXd y) {
-        this->x = x;
-        this->y = y;
-    }
 /************************************** User defined **************************************/
 };
 
+ExternData extern_data;
 
 class AutoDiffFunction :public UniversalData {
 private:
@@ -92,18 +89,17 @@ double function(const VectorXd& effective_para, const UniversalData& universal_d
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<universal_function> get_universal_function() {
-    return Rcpp::XPtr<universal_function>(new universal_function(&function));
+Rcpp::XPtr<function_ptr> get_universal_function() {
+    function_ptr tem = (function_ptr)(&function);
+    return Rcpp::XPtr<function_ptr>(new function_ptr(tem));
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<void*> get_extern_data(
-    /************************************** User defined **************************************/
-    MatrixXd x, VectorXd y
-    /************************************** User defined **************************************/
-) {
-    ExternData* ptr = new ExternData(x,y);
-    return Rcpp::XPtr<void*>(new (void*) ptr);
+Rcpp::XPtr<void*> get_extern_data(MatrixXd x, VectorXd y) {
+    extern_data.x = x;
+    extern_data.y = y;
+    ExternData* ptr = &extern_data;
+    return Rcpp::XPtr<void*>(new (void*)(ptr));
 }
 
 

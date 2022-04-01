@@ -171,6 +171,7 @@
     <ClInclude Include="abess-core.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="success.R" />
     <None Include="x.csv" />
     <None Include="y.csv" />
   </ItemGroup>
