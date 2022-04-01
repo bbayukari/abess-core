@@ -32,6 +32,9 @@
     <ClCompile Include="universalFunction.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\abess\src\AlgorithmUnivesal.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\abess\python\src\List.h">
@@ -77,6 +80,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\abess\src\UniversalData.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\abess\src\AlgorithmUniversal.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>

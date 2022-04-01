@@ -116,12 +116,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\code\abess\python\src;D:\code\abess\src;D:\lib\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\code\abess\python\src;D:\code\abess\src;D:\usr\include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\usr\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libnlopt.dll.a;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\abess\python\src\List.cpp" />
+    <ClCompile Include="..\..\abess\src\AlgorithmUnivesal.cpp" />
     <ClCompile Include="..\..\abess\src\api.cpp" />
     <ClCompile Include="..\..\abess\src\normalize.cpp" />
     <ClCompile Include="..\..\abess\src\UniversalData.cpp" />
@@ -155,6 +158,7 @@
     <ClInclude Include="..\..\abess\src\Algorithm.h" />
     <ClInclude Include="..\..\abess\src\AlgorithmGLM.h" />
     <ClInclude Include="..\..\abess\src\AlgorithmPCA.h" />
+    <ClInclude Include="..\..\abess\src\AlgorithmUniversal.h" />
     <ClInclude Include="..\..\abess\src\api.h" />
     <ClInclude Include="..\..\abess\src\Data.h" />
     <ClInclude Include="..\..\abess\src\Metric.h" />
