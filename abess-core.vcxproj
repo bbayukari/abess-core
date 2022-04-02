@@ -150,6 +150,7 @@
     <ClCompile Include="..\..\abess\src\UniversalData.cpp" />
     <ClCompile Include="..\..\abess\src\utilities.cpp" />
     <ClCompile Include="abess-core.cpp" />
+    <ClCompile Include="源.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\abess\python\src\List.h" />

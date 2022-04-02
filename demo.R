@@ -1,5 +1,4 @@
 code = "
-// [[Rcpp::depends(abess)]]
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::depends(BH)]]
 // [[Rcpp::depends(StanHeaders)]]
@@ -11,10 +10,12 @@ code = "
 
 #include <Rcpp.h>
 #include <RcppEigen.h>
-#include <abessUniversal.h>
 
 using namespace Eigen;
 using namespace stan::math; // necessary to get the type promotion correct
+
+typedef double(*UniversalFunction)(const Eigen::VectorXd& effective_para, Eigen::VectorXd* gradient, Eigen::MatrixXd* hessian,
+    const int model_size, const Eigen::VectorXi &effective_para_index, const Eigen::VectorXi* compute_para_index_ptr);
 
 struct ExternData {
     /************************************* User defined **************************************/
@@ -23,15 +24,18 @@ struct ExternData {
     /************************************** User defined **************************************/
 } extern_data;
 
-class AutoDiffFunction :public UniversalData {
+class AutoDiffFunction{
 private:
-    VectorXd const* effective_para_ptr;
+    const VectorXd* effective_para_ptr;
+    const int model_size;
+    const VectorXi* effective_para_index_ptr;
+    const VectorXi* compute_para_index_ptr; //when it's NULL, compute_para equals to effective_para
 public:
-    AutoDiffFunction(const UniversalData& universal_data, VectorXd const* effective_para_ptr)
-        :UniversalData(universal_data), effective_para_ptr(effective_para_ptr)
+    AutoDiffFunction(const VectorXd* effective_para_ptr, const int model_size, const VectorXi* effective_para_index_ptr, const VectorXi* compute_para_index_ptr)
+        :effective_para_ptr(effective_para_ptr), model_size(model_size), effective_para_index_ptr(effective_para_index_ptr), compute_para_index_ptr(compute_para_index_ptr)
     {
         if (this->compute_para_index_ptr == NULL) {
-            this->compute_para_index_ptr = &this->effective_para_index;
+            this->compute_para_index_ptr = this->effective_para_index_ptr;
         }
     }
     template <typename T>
@@ -40,8 +44,8 @@ public:
         for (int i = 0; i < para.size(); i++) {
             para[i] = T(0.0);
         }
-        for (int i = 0; i < this->effective_para_index.size(); i++) {
-            para[this->effective_para_index[i]] = T((*this->effective_para_ptr)[i]);
+        for (int i = 0; i < this->effective_para_index_ptr->size(); i++) {
+            para[(*this->effective_para_index_ptr)[i]] = T((*this->effective_para_ptr)[i]);
         }
         for (int i = 0; i < this->compute_para_index_ptr->size(); i++) {
             para[(*this->compute_para_index_ptr)[i]] = compute_para[i];
@@ -55,18 +59,17 @@ public:
         /************************************** User defined **************************************/
     }
     // extract compute_para from effective_para
-    void get_compute_para(const VectorXd& effective_para, VectorXd& compute_para) const
+    void get_compute_para(VectorXd& compute_para)
     {
         if (this->compute_para_index_ptr == NULL) {
-            compute_para = effective_para;
+            compute_para = *this->effective_para_ptr;
         }
         else {
-            // assert(effective_para.size() == this->effective_para_index.size());
             VectorXd complete_para = VectorXd::Zero(this->model_size);
-            for (int i = 0; i < this->effective_para_index.size(); i++) {
-                complete_para[this->effective_para_index[i]] = effective_para[i];
+            for (int i = 0; i < this->effective_para_index_ptr->size(); i++) {
+                complete_para[(*this->effective_para_index_ptr)[i]] = (*this->effective_para_ptr)[i];
             }
-            compute_para = VectorXd(this->compute_para_index_ptr->size());
+            compute_para.resize(this->compute_para_index_ptr->size());
             for (int i = 0; i < compute_para.size(); i++) {
                 compute_para[i] = complete_para[(*this->compute_para_index_ptr)[i]];
             }
@@ -74,51 +77,37 @@ public:
     }
 };
 
-double comput_value(const VectorXd& effective_para, const UniversalData& universal_data) {
-    AutoDiffFunction function(universal_data, &effective_para);
+double universal_function(const Eigen::VectorXd& effective_para, Eigen::VectorXd* gradient, Eigen::MatrixXd* hessian,
+    const int model_size, const Eigen::VectorXi &effective_para_index, const Eigen::VectorXi* compute_para_index_ptr)
+{
+    AutoDiffFunction function(&effective_para, model_size, &effective_para_index, compute_para_index_ptr);
     VectorXd compute_para;
-    function.get_compute_para(effective_para, compute_para);
+    function.get_compute_para(compute_para);
+    double value = 0.;
+    if (hessian) {
+        if (!gradient) {
+            VectorXd grad(compute_para.size());
+            gradient = &grad;
+        }
+        stan::math::hessian(function, compute_para, value, *gradient, *hessian);
+        return value;
+    }
+    if (gradient) {
+        stan::math::gradient(function, compute_para, value, *gradient);
+        return value;
+    }
     return function(compute_para);
 }
 
-double compute_gradient(const VectorXd& effective_para, const UniversalData& universal_data, VectorXd* gradient) {
-    double value = 0;
-    AutoDiffFunction function(universal_data, &effective_para);
-    VectorXd compute_para;
-    function.get_compute_para(effective_para, compute_para);
-    stan::math::gradient(function, compute_para, value, *gradient);
-    return value;
-}
-
-double compute_hessian(const VectorXd& effective_para, const UniversalData& universal_data, VectorXd* gradient, MatrixXd* hessian) {
-    double value = 0;
-    AutoDiffFunction function(universal_data, &effective_para);
-    VectorXd compute_para;
-    function.get_compute_para(effective_para, compute_para);
-    if (!gradient) {
-        VectorXd grad(compute_para.size());
-        gradient = &grad;
-    }
-    stan::math::hessian(function, compute_para, value, *gradient, *hessian);
-    return value;
-}
-
-double function(const VectorXd& effective_para, const UniversalData& universal_data, VectorXd* gradient, MatrixXd* hessian) {
-    if (hessian) {
-        return compute_hessian(effective_para, universal_data, gradient, hessian);
-    }
-    if (gradient) {
-        return compute_gradient(effective_para, universal_data, gradient);
-    }
-    return comput_value(effective_para, universal_data);
+// [[Rcpp::export]]
+Rcpp::XPtr<UniversalFunction> get_universal_function() {
+    return Rcpp::XPtr<UniversalFunction>(new UniversalFunction(&universal_function));
 }
 
 // [[Rcpp::export]]
-Rcpp::XPtr<function_ptr> get_universal_function(MatrixXd x, VectorXd y) {
+void set_extern_data(MatrixXd x, VectorXd y){
     extern_data.x = x;
     extern_data.y = y;
-    function_ptr tem = (function_ptr)(&function);
-    return Rcpp::XPtr<function_ptr>(new function_ptr(tem));
 }
 "
 
@@ -130,7 +119,9 @@ x = dataset[["x"]]
 y = dataset[["y"]]
 
 Rcpp::sourceCpp(code = code)
-f = get_universal_function(x,y)
+set_extern_data(x,y)
+f = get_universal_function()
+
 new.x = matrix(0,nrow = nrow(x),ncol = ncol(x)+1)
 
 abess_fit_universal <- abessUniversal(f,ncol(x)+1,nrow(x),new.x,y,always.include = c(1))
