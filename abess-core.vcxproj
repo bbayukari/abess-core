@@ -150,7 +150,6 @@
     <ClCompile Include="..\..\abess\src\UniversalData.cpp" />
     <ClCompile Include="..\..\abess\src\utilities.cpp" />
     <ClCompile Include="abess-core.cpp" />
-    <ClCompile Include="universalFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\abess\python\src\List.h" />
@@ -171,7 +170,7 @@
     <ClInclude Include="abess-core.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="success.R" />
+    <None Include="demo.R" />
     <None Include="x.csv" />
     <None Include="y.csv" />
   </ItemGroup>

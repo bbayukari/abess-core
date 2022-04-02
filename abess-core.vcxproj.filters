@@ -29,9 +29,6 @@
     <ClCompile Include="..\..\abess\src\UniversalData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="universalFunction.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\abess\src\AlgorithmUnivesal.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -93,7 +90,7 @@
     <None Include="y.csv">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="success.R">
+    <None Include="demo.R">
       <Filter>资源文件</Filter>
     </None>
   </ItemGroup>
